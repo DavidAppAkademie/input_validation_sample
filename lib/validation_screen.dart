@@ -58,11 +58,11 @@ class ValidationScreen extends StatelessWidget {
   }
 
   // - min. 3 Zeichen  CHECK
-// - max. 20 Zeichen
-// - keine Leerzeichen
-// - sollte mit Buchstaben beginnen
-// - keine Emojis
-// - Umlaute verbieten
+  // - max. 20 Zeichen
+  // - keine Leerzeichen
+  // - sollte mit Buchstaben beginnen
+  // - keine Emojis
+  // - Umlaute verbieten
 
   String? validateUsername(String? userInput) {
     if (userInput == null || userInput.length < 3) {
