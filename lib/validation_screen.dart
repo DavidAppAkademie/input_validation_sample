@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 
-class ValidationScreen extends StatelessWidget {
+class ValidationScreen extends StatefulWidget {
   // Attribute
   // (keine)
 
   // Konstruktor
   const ValidationScreen({super.key});
+
+  @override
+  State<ValidationScreen> createState() => _ValidationScreenState();
+}
+
+class _ValidationScreenState extends State<ValidationScreen> {
+  // State
+  final formKey = GlobalKey<FormState>();
+  bool _isButtonDisabled = true;
 
   // Methoden
   @override
@@ -17,40 +26,70 @@ class ValidationScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Column(
-            spacing: 16,
-            children: [
-              Text(
-                'Neuer Account',
-                style: Theme.of(context).textTheme.displaySmall,
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: validateUsername,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Username',
+          child: Form(
+            onChanged: () {
+              setState(() {
+                final bool isFormValid = formKey.currentState!.validate();
+                _isButtonDisabled = !isFormValid;
+              });
+            },
+            key: formKey,
+            child: Column(
+              spacing: 16,
+              children: [
+                Text(
+                  'Neuer Account',
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'E-Mail',
+                SizedBox(height: 16),
+                TextFormField(
+                  validator: (String? userInput) {
+                    if (userInput == null || userInput == "") {
+                      return "Darf nicht leer sein";
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Vorname',
+                  ),
                 ),
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Passwort',
+                TextFormField(
+                  validator: validateUsername,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Username',
+                    labelText: 'Username*',
+                  ),
                 ),
-              ),
-              SizedBox(height: 16),
-              FilledButton(
-                onPressed: () {},
-                child: Text('Registrieren'),
-              ),
-            ],
+                TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'E-Mail',
+                  ),
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Passwort',
+                  ),
+                ),
+                SizedBox(height: 16),
+                FilledButton(
+                  onPressed: _isButtonDisabled
+                      ? null
+                      : () {
+                          final bool isFormValid = formKey.currentState!
+                              .validate();
+                          if (isFormValid) {
+                            // registriere den Nutzer über Firebase Auth
+                            // erstelle den AppUser in der (Mock)Datenbank
+                          }
+                        },
+                  child: Text('Registrieren'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -58,12 +97,6 @@ class ValidationScreen extends StatelessWidget {
   }
 
   // - min. 3 Zeichen  CHECK
-  // - max. 20 Zeichen
-  // - keine Leerzeichen
-  // - sollte mit Buchstaben beginnen
-  // - keine Emojis
-  // - Umlaute verbieten
-
   String? validateUsername(String? userInput) {
     if (userInput == null || userInput.length < 3) {
       return "Mindestens 3 Buchstaben";
